@@ -54,3 +54,28 @@ class LoginView(APIView):
             'access_token': access_token,
             'refresh_token': refresh_token,
         }, status=status.HTTP_200_OK)
+
+
+class LogoutView(APIView):
+    def post(self, request):
+        refresh_token = request.data.get('refresh_token')
+
+        if not refresh_token:
+            return Response(
+                {'error': 'Refresh token обязателен'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            token = RefreshToken.objects.get(token=refresh_token, user=request.user)
+            token.delete()
+        except RefreshToken.DoesNotExist:
+            return Response(
+                {'error': 'Токен не найден'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        return Response(
+            {'message': 'Вы успешно вышли из системы'},
+            status=status.HTTP_200_OK
+        )
