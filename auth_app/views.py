@@ -79,3 +79,36 @@ class LogoutView(APIView):
             {'message': 'Вы успешно вышли из системы'},
             status=status.HTTP_200_OK
         )
+
+class RefreshTokenView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        refresh_token = request.data.get('refresh_token')
+
+        if not refresh_token:
+            return Response(
+                {'error': 'Refresh token обязателен'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            token = RefreshToken.objects.get(token=refresh_token)
+        except RefreshToken.DoesNotExist:
+            return Response(
+                {'error': 'Токен не найден'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        if token.expires_at < datetime.now(timezone.utc):
+            token.delete()
+            return Response(
+                {'error': 'Refresh token истёк'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        new_access_token = generate_access_token(token.user.id)
+
+        return Response({
+            'access_token': new_access_token,
+        }, status=status.HTTP_200_OK)
