@@ -79,7 +79,7 @@ Backend-приложение с собственной системой ауте
 ### 1. Клонировать репозиторий
 
 ```bash
-git clone https://github.com/твой_ник/auth_project.git
+git clone https://github.com/dianaLoki/auth_system.git
 cd auth_project
 ```
 
