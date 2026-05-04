@@ -80,7 +80,7 @@ Backend-приложение с собственной системой ауте
 
 ```bash
 git clone https://github.com/dianaLoki/auth_system.git
-cd auth_project
+cd auth_system
 ```
 
 ### 2. Создать и активировать виртуальное окружение
