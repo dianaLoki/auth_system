@@ -55,3 +55,21 @@ class ViewAuthAppTest(APITestCase):
             'password': '111111',
         })
         self.assertEqual(response.status_code, 401)
+
+    def test_logout_view(self):
+        login_response = self.client.post(reverse('login'), data={
+            'email': 'test_email@gmail.com',
+            'password': '12345',
+        })
+        access_token = login_response.data['access_token']
+        refresh_token = login_response.data['refresh_token']
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+        url = reverse('logout')
+        response = self.client.post(url, data={'refresh_token': refresh_token})
+        self.assertEqual(response.status_code, 200)
+
+    def test_logout_view_403(self):
+        url = reverse('logout')
+        self.client.credentials()
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
